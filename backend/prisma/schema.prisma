@@ -1,0 +1,82 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum LogStatus {
+  pending
+  taken
+  missed
+}
+
+enum RiskLevel {
+  low
+  medium
+  high
+}
+
+model User {
+  id             String      @id
+  fullName       String
+  age            Int?
+  caregiverName  String?
+  caregiverPhone String?
+  caregiverEmail String?
+  medications    Medication[]
+  logs           Log[]
+  riskScore      RiskScore?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+}
+
+model Medication {
+  id           String   @id
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name         String
+  dosage       String
+  scheduleTime String
+  logs         Log[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model Log {
+  id             String    @id
+  userId         String
+  medicationId   String
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  medication     Medication @relation(fields: [medicationId], references: [id], onDelete: Cascade)
+  scheduledAt    DateTime
+  takenAt        DateTime?
+  status         LogStatus @default(pending)
+  visionVerified Boolean   @default(false)
+  voiceVerified  Boolean   @default(false)
+  delayMinutes   Int       @default(0)
+  createdAt      DateTime  @default(now())
+
+  @@index([userId])
+  @@index([medicationId])
+  @@index([scheduledAt])
+}
+
+model RiskScore {
+  id                String    @id @default(cuid())
+  userId            String    @unique
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  missedDoses       Int       @default(0)
+  totalDelayMinutes Int       @default(0)
+  historyFactor     Float     @default(0)
+  weight1           Float     @default(1)
+  weight2           Float     @default(1)
+  weight3           Float     @default(1)
+  score             Float     @default(0)
+  level             RiskLevel @default(low)
+  updatedAt         DateTime  @updatedAt
+}
