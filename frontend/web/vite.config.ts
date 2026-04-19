@@ -28,8 +28,6 @@ export default defineConfig({
     alias: {
       // Alias @ to the src directory
       '@': path.resolve(__dirname, './src'),
-      react: path.resolve(__dirname, '../mobile/node_modules/react'),
-      'react-dom': path.resolve(__dirname, '../mobile/node_modules/react-dom'),
     },
   },
 
