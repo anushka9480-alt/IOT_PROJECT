@@ -68,6 +68,21 @@ apiRouter.post('/medications', async (request: Request, response: Response) => {
   response.status(201).json(medication);
 });
 
+apiRouter.delete('/medications/:id', async (request: Request, response: Response) => {
+  const medicationId = getSingleParam(request.params.id);
+
+  if (!medicationId) {
+    response.status(400).json({ ok: false, message: 'Medication id is required.' });
+    return;
+  }
+
+  await prisma.medication.delete({
+    where: { id: medicationId },
+  });
+
+  response.json({ ok: true, id: medicationId });
+});
+
 apiRouter.put('/logs/:id', async (request: Request, response: Response) => {
   const payload = request.body as {
     id: string;

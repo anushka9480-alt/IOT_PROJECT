@@ -1,0 +1,76 @@
+name: Build Android APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'frontend/mobile/**'
+      - '.github/workflows/build-android-apk.yml'
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend/mobile
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: frontend/mobile/package-lock.json
+
+      - name: Setup Expo and EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Install mobile dependencies
+        run: npm ci
+
+      - name: Start preview APK build on EAS and wait
+        id: eas_build
+        shell: bash
+        run: |
+          npx eas-cli build \
+            --platform android \
+            --profile preview \
+            --non-interactive \
+            --wait \
+            --json > eas-build.json
+
+          node -e "const fs=require('fs'); const raw=fs.readFileSync('eas-build.json','utf8').trim(); const data=JSON.parse(raw); const build=Array.isArray(data)?data[0]:data; const url=build.artifacts?.buildUrl || build.artifacts?.applicationArchiveUrl || ''; if(!url){process.exit(1)} fs.appendFileSync(process.env.GITHUB_OUTPUT, `download_url=${url}\n`);"
+
+      - name: Download APK
+        shell: bash
+        run: |
+          curl -L "${{ steps.eas_build.outputs.download_url }}" --output medicine-adherence-assistant.apk
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: medicine-adherence-assistant-apk
+          path: frontend/mobile/medicine-adherence-assistant.apk
+
+      - name: Publish GitHub release asset
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest-apk
+          name: Latest Android APK
+          make_latest: true
+          files: frontend/mobile/medicine-adherence-assistant.apk
+          body: |
+            Automated Android APK build for the IoT Medication Reminder App.
+
+            Direct download:
+            https://github.com/${{ github.repository }}/releases/latest/download/medicine-adherence-assistant.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
