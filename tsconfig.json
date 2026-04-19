@@ -8,6 +8,17 @@
         "src/*"
       ]
     }
-  }
+  },
+  "include": [
+    "App.tsx",
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "tests/**/*.ts",
+    "vitest.config.ts"
+  ],
+  "exclude": [
+    "IoT Medication Reminder App",
+    "backend",
+    "node_modules"
+  ]
 }
-

@@ -1,6 +1,7 @@
 {
   "name": "medicine-adherence-assistant",
   "version": "0.1.0",
+  "description": "IoT medication reminder app with an Expo mobile assistant and Vercel-deployed React landing page.",
   "private": true,
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
