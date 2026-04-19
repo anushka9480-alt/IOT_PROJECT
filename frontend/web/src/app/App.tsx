@@ -261,8 +261,8 @@ export default function App() {
           <div className="stats-grid">
             {statItems.map(([value, label], index) => (
               <Reveal className="metric" delay={index * 0.08} key={label}>
-                <strong>{value}</strong>
-                <span>{label}</span>
+                <div className="metric-value">{value}</div>
+                <div className="metric-label">{label}</div>
               </Reveal>
             ))}
           </div>

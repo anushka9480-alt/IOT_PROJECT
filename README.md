@@ -49,6 +49,23 @@ IOT_PROJECT/
 
 ## Run Locally
 
+## Environment Variables
+
+Use `.env.example` as the official template for Gemini and API configuration.
+
+For local development:
+
+```bash
+copy .env.example .env
+copy frontend\mobile\.env.example frontend\mobile\.env
+```
+
+Required variables:
+
+- `EXPO_PUBLIC_GEMINI_API_KEY`: used by the mobile app Gemini client flow
+- `EXPO_PUBLIC_API_BASE_URL`: mobile app API base URL
+- `GEMINI_API_KEY`: reserved for backend or future server-side Gemini integration
+
 ### Mobile App (Expo)
 
 ```bash

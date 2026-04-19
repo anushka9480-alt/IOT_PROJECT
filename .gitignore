@@ -10,6 +10,13 @@ web-build/
 
 # Environment files
 .env
+.env.*
+frontend/mobile/.env
+frontend/mobile/.env.*
+frontend/web/.env
+frontend/web/.env.*
+backend/.env
+backend/.env.*
 
 # Database files
 *.db
